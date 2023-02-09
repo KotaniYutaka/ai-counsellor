@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<head>
+  <title>AI Counsellor | Talk to anything you want</title>
+  <link
+    rel="shortcut icon"
+    href="{{ url_for('static', filename='counselling.png') }}"
+  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+  <img src="{{ url_for('static', filename='counselling.png') }}" class="icon" />
+  <h3>free to talk</h3>
+  <form id="postForm"  method="POST" >
+
+
+    <input type="text" id='userInput' name="animal" placeholder="Enter your message" autocomplete="off" required />
+    <input type="submit" value="send a message" />
+    <!-- <div id="messages" style="white-space: pre-wrap; word-wrap: break-word; width: 60%; max-height: none; overflow: visible; font-size: 1.5em; margin: 0 auto; text-align: center; margin-bottom: 20px; line-height: 1.5; display: flex; justify-content: center;"></div> -->
+  </form>
+  <div id="messages" style="white-space: pre-wrap; word-wrap: break-word; width: 40%; max-height: none; overflow: visible; font-size: 1.5em; margin-top: 20px; text-align: center; margin-bottom: 40px; line-height: 1.5; display: flex; justify-content: center; font-family: ColfaxAI;"></div>
+
+  <script>
+    document.getElementById('postForm').addEventListener('submit', getData);
+    var submitBtn = document.querySelector('input[type="submit"]');
+    submitBtn.disabled = false;
+
+    function getData(e){
+      e.preventDefault();
+      submitBtn.disabled = true
+      submitBtn.value = "processing...";     
+
+
+
+      var name = document.getElementById('userInput').value;
+      
+      var params = {user_input:name}
+
+      var xhr = new XMLHttpRequest();
+
+      xhr.open('post', '../output', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      xhr.onload = function(){
+        console.log('Reached');
+        document.getElementById('messages').innerHTML= this.responseText;
+        // submit buttonを有効に戻す
+        submitBtn.disabled  = false;
+        // submit buttonのテキストを元に戻す
+        submitBtn.value = "send a message";
+      }
+      xhr.send(JSON.stringify(params));
+    }
+
+  </script>
+  {% if result %}
+  <style>
+    .result {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-width: 600px;
+      max-height: none;
+      overflow: visible;
+      font-size: 3em;
+      line-height: 1.5;
+    }
+  </style>
+  <div class="result">{{ result }}</div>
+  {% endif %}
+</body>
